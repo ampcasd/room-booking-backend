@@ -1,0 +1,36 @@
+services:
+  room-booking-backend:
+    build:
+      context: .
+      dockerfile: ./apps/room-booking-backend/Dockerfile
+      target: development
+    command: npm run start:dev room-booking-backend
+    env_file:
+      - ./apps/room-booking-backend/.env
+    depends_on:
+      - authentication
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3100:3100'
+  authentication:
+    build:
+      context: .
+      dockerfile: ./apps/authentication/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    ports:
+      - '3001:3001'
+    env_file:
+      - ./apps/authentication/.env
+    depends_on:
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - '5672:5672'
